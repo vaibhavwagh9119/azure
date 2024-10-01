@@ -17,12 +17,33 @@ module "virtual_network" {
   
 }
 
-module "subnets" {
-  depends_on = [ module.virtual_network ]
+
+
+module "aks_subnet" {
   source              = "./modules/subnets"
-  virtual_network_name  = "myVnet"
+  name                = "aks-subnet"
   resource_group_name = module.resource_group.resource_group_name
+  virtual_network_name = "myVnet"
+  address_prefixes    = ["10.1.0.0/16"]
 }
+
+module "app_gateway_subnet" {
+  source              = "./modules/subnets"
+  name                = "app-gateway-subnets"
+  resource_group_name = module.resource_group.resource_group_name
+  virtual_network_name = "myVnet"
+  address_prefixes    = ["10.2.0.0/24"]
+}
+
+module "vpn_gateway_subnet" {
+  source              = "./modules/subnets"
+  name                = "GatewaySubnet"
+  resource_group_name = module.resource_group.resource_group_name
+  virtual_network_name = "myVnet"
+  address_prefixes    = ["10.0.0.0/24"]
+}
+
+
 
 module "aks_cluster" {
   source              = "./modules/aks_cluster"
